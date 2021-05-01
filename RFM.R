@@ -4,6 +4,7 @@ install.packages("factoextra")
 
 library(openxlsx)
 library(factoextra)
+library(NbClust)
 library(dplyr)
 
 CustomerRFM <- read.xlsx("online_retail_II.xlsx","Year 2009-2010")
@@ -55,9 +56,32 @@ summary(CustomerRFM3)
 CustomerRFM3.scaled <- scale(CustomerRFM3)
 View(CustomerRFM3.scaled)
 
+
+# We can find number of clusters using fviz_nbclust() function: 
+# Elbow, Silhouhette, and Gap statistic methods
+# FUNcluster can be kmeans, pam, clara and hcut
+
+# Elbow method
+fviz_nbclust(CustomerRFM3.scaled, kmeans, method = "wss") +
+  labs(subtitle = "Elbow method")
+
+# Silhouette method
+fviz_nbclust(CustomerRFM3.scaled, kmeans, method = "silhouette")+
+  labs(subtitle = "Silhouette method")
+
+# Gap statistic
+# nboot = 50 to keep the function speedy. 
+# recommended value: nboot= 500 for your analysis.
+# Use verbose = FALSE to hide computing progression.
+set.seed(123)
+fviz_nbclust(CustomerRFM3.scaled, kmeans, nstart = 25,  method = "gap_stat", k.max = 10, nboot = 50)+
+  labs(subtitle = "Gap statistic method")
+
+# best cluster size is k=7
+
 # k-means clustering
 set.seed(1234)
-cust_clustering <- kmeans(CustomerRFM3.scaled, 5)
+cust_clustering <- kmeans(CustomerRFM3.scaled, 7)
 
 cust_clustering$size
 
@@ -85,6 +109,7 @@ table(cust_cluster)
 cust_clusters <- data.frame(CustomerRFM3$Customer.ID, cust_cluster)
 View(cust_clusters)
 
+# show cluster RFM values
 cust_features.statistics <- aggregate(CustomerRFM3[c(-1)], by = list(cluster = cust_cluster), mean)
 cust_features.statistics$N <- as.numeric(table(cust_cluster))
 View(cust_features.statistics)
