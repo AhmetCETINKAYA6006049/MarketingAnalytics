@@ -103,7 +103,7 @@ View(dataset_apriori)
 dataset_apriori2 <- dataset_apriori %>%
   group_by(Invoice)%>% 
   arrange(Description) %>%
-  summarise(satin_alinan_urunler  = paste(Description, collapse =";"))
+  summarise(satin_alinan_urunler  = paste(Description, collapse =","))
 
 View(dataset_apriori2)
 
@@ -116,10 +116,10 @@ View(dataset_transaction)
 #Data Frame formatındaki listemizi kaydedelim
 # write.csv() yaptığımızda column names-header lar birinci ürün olarak geliyor, 
 # bunu engellemek için write.table() fonk kullanılır.
-write.table(dataset_transaction,"retail_apriori.csv", sep =";", col.names = FALSE, row.names =FALSE)
+write.table(dataset_transaction,"retail_apriori.csv", sep =",", col.names = FALSE, row.names =FALSE)
 
 # apriori için transactionları oku
-products <- read.transactions("retail_apriori.csv", sep =";")
+products <- read.transactions("retail_apriori.csv", sep =",")
 
 summary(products)
 
@@ -157,9 +157,9 @@ inspect(productsRules[1:20])
 #lift i en yüksek 10 kuralı göster.
 inspect(sort(productsRules, by = "lift")[1:10])
 
-# bir ürünün kural seti subset() ile gösterilir.
-hangingChickGreenRules <- subset(productsRules, items %in% "HANGING CHICK  GREEN")
+# bir ürünün kural seti arules libraryden subset() fonksiyonu ile gösterilir.
+hangingChickCreamRules <- subset(productsRules, items %in% "HANGING CHICK CREAM")
 
-inspect(hangingChickGreenRules)
+inspect(hangingChickCreamRules)
 
 # Teşekkürler
